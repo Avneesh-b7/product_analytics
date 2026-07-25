@@ -12,6 +12,7 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Claude memory symlink
+.claude-memory
 .claude-memory/
 
 # Output files
@@ -28,3 +29,11 @@ Thumbs.db
 .idea/
 .parquet/
 
+# Environment variables (never commit)
+.env
+
+# Claude Code project config (contains credentials)
+.claude/
+
+
+demo_data.sql

@@ -1,0 +1,38 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'background': '#0d0d0d', 'mainBkg': '#1a1a1a', 'primaryColor': '#1a1a1a', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#ffffff', 'lineColor': '#ffffff', 'attributeBackgroundColorEven': '#1a1a1a', 'attributeBackgroundColorOdd': '#111111', 'tertiaryColor': '#111111', 'edgeLabelBackground': '#1a1a1a', 'titleColor': '#ffffff'}}}%%
+erDiagram
+    CUSTOMERS {
+        int customer_id PK "1, 2, 3"
+        varchar email "twilliams@example.com"
+        date registration_date "2024-09-20"
+        varchar country "Netherlands, Hungary, Chile"
+        varchar tier "silver, gold"
+    }
+
+    PRODUCTS {
+        int product_id PK "1, 2, 3"
+        varchar name "Bad add, Building free"
+        varchar category "Home, Sports, Clothing"
+        numeric price "375.70, 327.82, 315.50"
+        int stock_quantity "509, 621, 76"
+    }
+
+    ORDERS {
+        int order_id PK "1, 2, 3"
+        int customer_id FK "1166, 331, 26"
+        date order_date "2025-10-29, 2025-08-17"
+        varchar status "cancelled, shipped, delivered"
+        numeric total_amount "213.63, 994.57, 413.63"
+        varchar region "NA, EMEA"
+    }
+
+    ORDER_ITEMS {
+        int item_id PK "1, 2, 3"
+        int order_id FK "2759, 7253"
+        int product_id FK "494, 75, 161"
+        int quantity "3, 4"
+        numeric price "128.96, 38.53, 56.52"
+    }
+
+    CUSTOMERS ||--o{ ORDERS : "places"
+    ORDERS ||--o{ ORDER_ITEMS : "contains"
+    PRODUCTS ||--o{ ORDER_ITEMS : "included in"
