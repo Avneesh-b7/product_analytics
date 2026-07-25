@@ -21,6 +21,11 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 ├── event data aggregation/
 │   ├── event_data_agg.ipynb   # Primary working notebook
 │   └── event_data_agg.py      # Script version (reference)
+├── data engg proj (MCP)/
+│   ├── demo_data.sql          # Synthetic e-commerce dataset (43k rows)
+│   ├── schema_diagram.mmd     # Mermaid ER diagram
+│   ├── docker_cheatsheet.md   # Docker CLI quick reference
+│   └── README.md              # Setup guide for the Postgres environment
 ├── requirements.txt
 └── CLAUDE.md
 ```
