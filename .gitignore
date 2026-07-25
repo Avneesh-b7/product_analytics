@@ -11,6 +11,9 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
+# Claude memory symlink
+.claude-memory/
+
 # Output files
 *.parquet
 *.db
