@@ -15,6 +15,41 @@ A local PostgreSQL environment using Docker, loaded with a synthetic e-commerce 
 
 ---
 
+## Quick Start (clone → running database)
+
+```bash
+# 1. Clone the repo
+git clone <repo-url>
+cd "product_analytics_lrngs/data engg proj (MCP)"
+
+# 2. Start the container
+docker run -d \
+  --name pg-local \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=analytics \
+  -p 5432:5432 \
+  postgres:16
+
+# 3. Configure user and schema
+docker exec -i pg-local psql -U postgres -d analytics <<'SQL'
+CREATE USER app WITH PASSWORD 'app';
+GRANT ALL PRIVILEGES ON DATABASE analytics TO app;
+CREATE SCHEMA app AUTHORIZATION app;
+GRANT ALL ON SCHEMA app TO app;
+SQL
+
+# 4. Load the data
+docker exec -i pg-local psql -U postgres -d analytics < demo_data.sql
+
+# 5. Connect and query
+docker exec -it pg-local psql -U postgres -d analytics
+```
+
+That's it — you'll have 43,000 rows across 4 tables ready to query.
+
+---
+
 ## Prerequisites
 
 - Docker Desktop installed and running
