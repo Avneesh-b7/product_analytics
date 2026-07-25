@@ -6,12 +6,12 @@ A local PostgreSQL environment using Docker, loaded with a synthetic e-commerce 
 
 ## Project Files
 
-| File | Description |
-|---|---|
-| `demo_data.sql` | SQL dump with schema + 43,000 rows of e-commerce data |
-| `schema_diagram.mmd` | Mermaid ER diagram of the database schema |
-| `docker_cheatsheet.md` | Docker CLI quick reference |
-| `README.md` | This file |
+| File                   | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
+| `demo_data.sql`        | SQL dump with schema + 43,000 rows of e-commerce data |
+| `schema_diagram.mmd`   | Mermaid ER diagram of the database schema             |
+| `docker_cheatsheet.md` | Docker CLI quick reference                            |
+| `README.md`            | This file                                             |
 
 ---
 
@@ -108,11 +108,11 @@ docker exec -i pg-local psql -U postgres -d analytics < demo_data.sql
 
 This creates 4 tables and inserts 43,000 rows:
 
-| Table | Rows |
-|---|---|
-| `app.customers` | 2,000 |
-| `app.products` | 1,000 |
-| `app.orders` | 10,000 |
+| Table             | Rows   |
+| ----------------- | ------ |
+| `app.customers`   | 2,000  |
+| `app.products`    | 1,000  |
+| `app.orders`      | 10,000 |
 | `app.order_items` | 30,000 |
 
 ---
@@ -162,12 +162,12 @@ SET search_path TO app;
 
 ## Useful psql Commands
 
-| Command | What it does |
-|---|---|
-| `\dt app.*` | List tables in the app schema |
-| `\d app.orders` | Describe a table |
-| `SELECT * FROM app.orders LIMIT 5;` | Preview rows |
-| `\q` | Quit |
+| Command                             | What it does                  |
+| ----------------------------------- | ----------------------------- |
+| `\dt app.*`                         | List tables in the app schema |
+| `\d app.orders`                     | Describe a table              |
+| `SELECT * FROM app.orders LIMIT 5;` | Preview rows                  |
+| `\q`                                | Quit                          |
 
 ---
 
