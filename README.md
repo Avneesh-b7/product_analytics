@@ -1,6 +1,6 @@
 # Product Analytics Learning Lab
 
-A hands-on lab from the course *Product Analytics Unlocked: From Metrics to Meaningful Insights*. It walks through core data aggregation techniques using a synthetic 50k-row user event dataset — no external data files required.
+A hands-on lab from the course _Product Analytics Unlocked: From Metrics to Meaningful Insights_. It walks through core data aggregation techniques using a synthetic 50k-row user event dataset — no external data files required.
 
 ## What's Covered
 
