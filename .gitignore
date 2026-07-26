@@ -35,4 +35,7 @@ Thumbs.db
 # Claude Code project config (contains credentials)
 .claude/
 
+# dbt logs
+data engg proj (MCP)/logs/
+
 

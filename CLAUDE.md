@@ -59,6 +59,41 @@ docker exec -i pg-local psql -U postgres -d analytics < "data engg proj (MCP)/de
 docker exec -it pg-local psql -U postgres -d analytics
 ```
 
+### Users
+
+- **postgres** — superuser, used for admin tasks
+- **app** — read-only access to the `app` schema; created with:
+
+```sql
+CREATE USER app WITH PASSWORD 'password';
+GRANT CONNECT ON DATABASE analytics TO app;
+GRANT USAGE ON SCHEMA app TO app;
+GRANT SELECT ON ALL TABLES IN SCHEMA app TO app;
+```
+
+### dbt
+
+A dbt project lives in `data engg proj (MCP)/analytics_dbt/`. It uses the `.venv` in the repo root.
+
+```bash
+# Run all models
+.venv/bin/dbt run
+
+# Run a specific model
+.venv/bin/dbt run --select customer_analytics
+
+# Run tests
+.venv/bin/dbt test --select customer_analytics
+
+# Build + test in one shot
+.venv/bin/dbt build
+```
+
+Connection config is in `~/.dbt/profiles.yml` (not in repo). Output lands in the `dbt_dev` schema.
+
+Current models:
+- `customer_analytics` — joins all 4 `app` tables into a customer-level view with LTV, segmentation, and favorite category
+
 ### MCP Servers
 
 Configured in `.claude/settings.json` (project-level, gitignored):

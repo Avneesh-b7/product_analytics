@@ -25,7 +25,14 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 │   ├── demo_data.sql          # Synthetic e-commerce dataset (43k rows)
 │   ├── schema_diagram.mmd     # Mermaid ER diagram
 │   ├── docker_cheatsheet.md   # Docker CLI quick reference
-│   └── README.md              # Setup guide for the Postgres environment
+│   ├── audit_explained.md     # PostgreSQL performance audit walkthrough
+│   ├── indexes_explained.md   # Indexes explainer
+│   ├── README.md              # Setup guide for the Postgres environment
+│   └── analytics_dbt/        # dbt project for transforming e-commerce data
+│       ├── models/
+│       │   ├── customer_analytics.sql  # Customer-level analytics model
+│       │   └── schema.yml             # Column descriptions and tests
+│       └── dbt_project.yml
 ├── requirements.txt
 └── CLAUDE.md
 ```
@@ -36,3 +43,4 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 - `sqlite3` — in-memory SQL engine for dialect comparison
 - `pyarrow` — Parquet export
 - `plotly` — EDA visualizations
+- `dbt-postgres` — SQL transformation layer for the data engg project

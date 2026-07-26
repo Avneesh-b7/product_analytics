@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: customer_analytics
+    description: "Customer analytics combining order history, spending patterns, and segmentation"
+    columns:
+      - name: customer_id
+        description: "Unique identifier for each customer"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Customer email address"
+        tests:
+          - not_null
+      - name: lifetime_value
+        description: "Total amount spent by customer across all orders"
+        tests:
+          - not_null
+      - name: customer_segment
+        description: "Customer segment based on order frequency: inactive, occasional, regular, or VIP"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["inactive", "occasional", "regular", "vip"]
+      - name: total_orders
+        description: "Total number of orders placed by this customer"
+        tests:
+          - not_null
