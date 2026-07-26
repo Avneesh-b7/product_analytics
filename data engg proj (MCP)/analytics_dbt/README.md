@@ -135,7 +135,7 @@ analytics_dbt:
       host: localhost
       port: 5432
       user: postgres
-      password: password
+      password: <your_password>
       dbname: analytics
       schema: dbt_dev
 ```
