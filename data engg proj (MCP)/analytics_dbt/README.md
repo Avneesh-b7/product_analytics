@@ -25,16 +25,18 @@ dbt runs on your **local machine** and connects to the database over the network
 ## What's Happening Here
 
 ### Source data
+
 Raw tables live in the `app` schema inside the `analytics` Postgres database:
 
-| Table | Rows | Description |
-|---|---|---|
-| `app.customers` | 2,000 | Customer profiles |
-| `app.products` | 1,000 | Product catalog |
-| `app.orders` | 10,000 | Order headers |
+| Table             | Rows   | Description          |
+| ----------------- | ------ | -------------------- |
+| `app.customers`   | 2,000  | Customer profiles    |
+| `app.products`    | 1,000  | Product catalog      |
+| `app.orders`      | 10,000 | Order headers        |
 | `app.order_items` | 30,000 | Line items per order |
 
 ### dbt output
+
 Transformed models land in the `dbt_dev` schema, separate from the raw data.
 
 ---
@@ -42,7 +44,9 @@ Transformed models land in the `dbt_dev` schema, separate from the raw data.
 ## Models
 
 ### `customer_analytics`
+
 Joins all 4 source tables into a single customer-level view with:
+
 - Order history (total orders, lifetime value, first/last order date)
 - Avg order value
 - Favorite product category (by spend)
@@ -50,6 +54,7 @@ Joins all 4 source tables into a single customer-level view with:
 - Segment label: `inactive`, `occasional`, `regular`, or `vip`
 
 **CTE structure:**
+
 ```
 app.customers + app.orders
         ↓
@@ -116,15 +121,15 @@ analytics_dbt/
 
 ## Tests Defined
 
-| Test | Column | What it checks |
-|---|---|---|
-| `not_null` | `customer_id` | No missing IDs |
-| `unique` | `customer_id` | One row per customer |
-| `not_null` | `email` | Every customer has an email |
-| `not_null` | `lifetime_value` | No null spend (inactive = 0, not null) |
-| `not_null` | `total_orders` | Order count always present |
-| `not_null` | `customer_segment` | Every customer has a segment |
-| `accepted_values` | `customer_segment` | Only valid segment labels |
+| Test              | Column             | What it checks                         |
+| ----------------- | ------------------ | -------------------------------------- |
+| `not_null`        | `customer_id`      | No missing IDs                         |
+| `unique`          | `customer_id`      | One row per customer                   |
+| `not_null`        | `email`            | Every customer has an email            |
+| `not_null`        | `lifetime_value`   | No null spend (inactive = 0, not null) |
+| `not_null`        | `total_orders`     | Order count always present             |
+| `not_null`        | `customer_segment` | Every customer has a segment           |
+| `accepted_values` | `customer_segment` | Only valid segment labels              |
 
 ---
 
