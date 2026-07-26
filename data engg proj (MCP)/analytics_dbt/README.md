@@ -91,6 +91,12 @@ dbt test --select customer_analytics
 
 # Build + test in one shot
 dbt build
+
+# Generate documentation
+dbt docs generate
+
+# Serve docs locally (opens at http://localhost:8080)
+dbt docs serve
 ```
 
 ---

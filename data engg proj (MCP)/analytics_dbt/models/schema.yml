@@ -2,29 +2,53 @@ version: 2
 
 models:
   - name: customer_analytics
-    description: "Customer analytics combining order history, spending patterns, and segmentation"
+    description: >
+      One row per customer, joining app.customers, app.orders, app.order_items,
+      and app.products. Provides a complete customer-level view including order
+      history, lifetime value, favourite product category, and a behavioural
+      segment label. Intended as the primary starting point for customer-facing
+      analysis and reporting. Output lands in the dbt_dev schema as a view,
+      so it always reflects the latest source data.
     columns:
       - name: customer_id
-        description: "Unique identifier for each customer"
+        description: >
+          Primary key. Surrogate integer ID from app.customers. Unique per
+          customer and never null — safe to use as a join key against other
+          models built on the app schema.
         tests:
           - not_null
           - unique
       - name: email
-        description: "Customer email address"
+        description: >
+          Customer email address sourced directly from app.customers. Can be
+          used to join to CRM or marketing tools. Never null in the source data.
         tests:
           - not_null
       - name: lifetime_value
-        description: "Total amount spent by customer across all orders"
+        description: >
+          Sum of total_amount across all completed orders for this customer,
+          in USD. Customers with no orders receive 0 (not null) via COALESCE.
+          Use this as the primary revenue metric for customer-level analysis.
         tests:
           - not_null
       - name: customer_segment
-        description: "Customer segment based on order frequency: inactive, occasional, regular, or VIP"
+        description: >
+          Behavioural segment derived from total_orders:
+            - inactive   = 0 orders
+            - occasional = 1–4 orders
+            - regular    = 5–14 orders
+            - vip        = 15+ orders
+          Recalculated on every query since the model is a view. Use for
+          cohort analysis, targeting, and retention reporting.
         tests:
           - not_null
           - accepted_values:
               arguments:
                 values: ["inactive", "occasional", "regular", "vip"]
       - name: total_orders
-        description: "Total number of orders placed by this customer"
+        description: >
+          Count of distinct order_ids in app.orders for this customer.
+          Includes all order statuses. Zero for customers who registered
+          but never placed an order.
         tests:
           - not_null
