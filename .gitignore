@@ -39,3 +39,5 @@ Thumbs.db
 data engg proj (MCP)/logs/
 
 
+# .xlsx files 
+*.xlsx 

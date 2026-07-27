@@ -7,17 +7,13 @@ A dbt project that transforms raw e-commerce data in PostgreSQL into clean, test
 ## What is dbt?
 
 dbt (data build tool) handles the **T** in ELT — it transforms data that's already loaded into your database using SQL `SELECT` statements. You write the logic; dbt handles materializing it as tables or views.
-
-```
 Raw data (app schema)
-      ↓
-   dbt models (SQL SELECT statements)
-      ↓
+↓
+dbt models (SQL SELECT statements)
+↓
 Clean tables/views (dbt_dev schema)
-      ↓
-   Query / BI tool
-```
-
+↓
+Query / BI tool
 dbt runs on your **local machine** and connects to the database over the network. Nothing runs inside the container except the SQL itself.
 
 ---
@@ -54,22 +50,19 @@ Joins all 4 source tables into a single customer-level view with:
 - Segment label: `inactive`, `occasional`, `regular`, or `vip`
 
 **CTE structure:**
-
-```
 app.customers + app.orders
-        ↓
-  customer_orders        ← order totals per customer
+↓
+customer_orders ← order totals per customer
 
 app.order_items + app.orders + app.products
-        ↓
-  product_preferences    ← spend per customer per category
-        ↓
-  top_category_per_customer  ← best category per customer (ROW_NUMBER)
+↓
+product_preferences ← spend per customer per category
+↓
+top_category_per_customer ← best category per customer (ROW_NUMBER)
 
 customer_orders + top_category_per_customer
-        ↓
-  final SELECT           ← dbt_dev.customer_analytics
-```
+↓
+final SELECT ← dbt_dev.customer_analytics
 
 ---
 

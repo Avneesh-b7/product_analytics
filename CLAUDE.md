@@ -14,10 +14,10 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 python "event data aggregation/event_data_agg.py"
 ```
 
-Requires: `pandas`, `numpy`, `sqlite3` (stdlib), `pyarrow` (for Parquet export).
+Requires: `pandas`, `numpy`, `sqlite3` (stdlib), `pyarrow` (for Parquet export). The k-means lab additionally needs `scikit-learn`, `matplotlib`, `seaborn`, `openpyxl` (to read `.xlsx`).
 
 ```bash
-pip install pyarrow
+pip install -r requirements.txt
 ```
 
 ## What This Is
@@ -115,3 +115,11 @@ Synthetic e-commerce data, 43,000 rows across 4 tables in the `app` schema:
 - The SQLite table is named `user_events`, not `events_data` — use the correct name in SQL queries or they will fail silently.
 - `validate_results()` uses `locals()` in the original `.py` script, which works at module level. In the notebook, this must be `globals()` — the notebook copy has already been patched to use `globals()`.
 - The ANSI-SQL query can actually execute against the SQLite connection; the Spark-SQL query is a string for comparison only.
+
+## K-Means Clustering Lab
+
+A third lab in `k-means clustering/kmeans_clustering.ipynb` — customer segmentation on the **Online Retail II** dataset (`online_retail_II.xlsx`, sheet `Year 2009-2010`).
+
+**Read `k-means clustering/CLAUDE.md` before working in this folder** — it documents the dataset columns and requires all plots to use IBM Carbon Design Language colors (`https://www.ibm.com/design/language/color`), not the repo-wide dataviz defaults.
+
+Key data-cleaning steps applied before clustering: drop cancelled invoices (`Invoice` starting with `C`), drop non-standard `StockCode` values (not 5-digit numeric + optional single letter), drop rows with null `Customer ID`, drop non-positive `Price`. RFM features (`monetary_value`, `frequency`, `recency`) are aggregated to one row per `Customer ID` from the cleaned transaction-level data.
