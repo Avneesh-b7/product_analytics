@@ -123,3 +123,5 @@ A third lab in `k-means clustering/kmeans_clustering.ipynb` — customer segment
 **Read `k-means clustering/CLAUDE.md` before working in this folder** — it documents the dataset columns and requires all plots to use IBM Carbon Design Language colors (`https://www.ibm.com/design/language/color`), not the repo-wide dataviz defaults.
 
 Key data-cleaning steps applied before clustering: drop cancelled invoices (`Invoice` starting with `C`), drop non-standard `StockCode` values (not 5-digit numeric + optional single letter), drop rows with null `Customer ID`, drop non-positive `Price`. RFM features (`monetary_value`, `frequency`, `recency`) are aggregated to one row per `Customer ID` from the cleaned transaction-level data.
+
+**Read `k-means clustering/rfm_preprocessing_notes.md` for the full preprocessing/clustering pipeline** — log-transform before scaling (and why), elbow method + silhouette score explained, and the reasoning behind the chosen K (currently K=4).
