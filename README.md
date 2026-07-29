@@ -35,8 +35,10 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 │       │   └── schema.yml             # Column descriptions and tests
 │       └── dbt_project.yml
 ├── k-means clustering/
-│   ├── kmeans_clustering.ipynb  # Customer segmentation notebook
-│   └── CLAUDE.md                # Dataset notes + IBM Carbon color requirement for plots
+│   ├── kmeans_clustering.ipynb       # Customer segmentation notebook
+│   ├── rfm_preprocessing_notes.md    # Preprocessing/clustering pipeline notes (log-transform, elbow, silhouette, choice of K)
+│   ├── cluster_interpretation.md     # Business interpretation of fitted K=4 clusters (segment names, revenue share, PM actions)
+│   └── CLAUDE.md                     # Dataset notes + IBM Carbon color requirement for plots
 ├── requirements.txt
 └── CLAUDE.md
 ```
