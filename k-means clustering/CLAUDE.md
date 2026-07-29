@@ -57,3 +57,12 @@ log-transform → scaling → elbow/silhouette → K selection). Summary:
 - **K=4** was chosen via elbow method + silhouette score (see
   `elbow_silhouette_k4.png` and `rfm_preprocessing_notes.md` for the reasoning) —
   `KMeans(n_clusters=4, n_init=10, random_state=42)`.
+
+## Business Interpretation
+
+**Read `cluster_interpretation.md` for the business interpretation of the fitted clusters** —
+segment names (Champions, Dormant, Growth, Occasional/New), revenue share per cluster, and
+business actions per segment.
+
+`recency` is **raw days since last purchase**, not an inverted RFM score — low recency = bought
+recently = good. Don't flip this when reasoning about which cluster is "best."

@@ -131,6 +131,10 @@ nearest other cluster?*
 
 - Check cluster sizes — a wildly imbalanced split (e.g. one giant cluster + one tiny one)
   signals a problem.
-- Profile each cluster's mean RFM values — do the segments make business sense?
+- Profile each cluster's mean RFM values *and* revenue share (`sum(monetary_value)` per
+  cluster ÷ total) — a cluster can look unremarkable on mean RFM alone but still dominate
+  total revenue, which changes how much retention effort it deserves.
 - Turn cluster numbers into labels (e.g. "Champions", "At Risk", "Low-Value Frequent")
   based on the profile — that's the actual deliverable, not the raw cluster ID.
+  **See `cluster_interpretation.md` for the labels, revenue share, and business actions
+  assigned to each of the 4 clusters in this notebook.**

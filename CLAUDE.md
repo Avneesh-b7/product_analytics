@@ -125,3 +125,5 @@ A third lab in `k-means clustering/kmeans_clustering.ipynb` — customer segment
 Key data-cleaning steps applied before clustering: drop cancelled invoices (`Invoice` starting with `C`), drop non-standard `StockCode` values (not 5-digit numeric + optional single letter), drop rows with null `Customer ID`, drop non-positive `Price`. RFM features (`monetary_value`, `frequency`, `recency`) are aggregated to one row per `Customer ID` from the cleaned transaction-level data.
 
 **Read `k-means clustering/rfm_preprocessing_notes.md` for the full preprocessing/clustering pipeline** — log-transform before scaling (and why), elbow method + silhouette score explained, and the reasoning behind the chosen K (currently K=4).
+
+Recency in this lab is **raw days since last purchase**, not an inverted RFM score — low recency = bought recently = good. Business interpretation of the fitted K=4 clusters (segment names, revenue share, PM actions per segment) is documented in `k-means clustering/cluster_interpretation.md`.
