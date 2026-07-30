@@ -92,6 +92,7 @@ A dbt project lives in `data engg proj (MCP)/analytics_dbt/`. It uses the `.venv
 Connection config is in `~/.dbt/profiles.yml` (not in repo). Output lands in the `dbt_dev` schema.
 
 Current models:
+
 - `customer_analytics` — joins all 4 `app` tables into a customer-level view with LTV, segmentation, and favorite category
 
 ### MCP Servers
@@ -127,3 +128,22 @@ Key data-cleaning steps applied before clustering: drop cancelled invoices (`Inv
 **Read `k-means clustering/rfm_preprocessing_notes.md` for the full preprocessing/clustering pipeline** — log-transform before scaling (and why), elbow method + silhouette score explained, and the reasoning behind the chosen K (currently K=4).
 
 Recency in this lab is **raw days since last purchase**, not an inverted RFM score — low recency = bought recently = good. Business interpretation of the fitted K=4 clusters (segment names, revenue share, PM actions per segment) is documented in `k-means clustering/cluster_interpretation.md`.
+
+## Retention Analysis Lab
+
+A fourth lab in `retention_analysis/retention_analytics.ipynb` — time-based cohort retention analysis on the **Online Retail II** dataset, reusing `k-means clustering/online_retail_II.xlsx` but reading sheet `Year 2010-2011`. The analysis is framed as if performed on 1 Jan 2012.
+
+**Read `retention_analysis/explainer.md` for the full walkthrough** — cleaning steps, cohort date/index derivation, the retention pivot, and the heatmap code.
+
+Cleaning steps before building cohorts: drop rows with null/zero `Customer ID`, filter to `Quantity > 0` and `Price > 0`, drop duplicate rows.
+
+Cohort construction, all derived from `InvoiceDate`:
+
+- `first_purchase_date` — per-customer min `InvoiceDate`, via `groupby('Customer ID')['InvoiceDate'].transform('min')`
+- `cohort_date` — `first_purchase_date` truncated to the 1st of its month (the acquisition cohort)
+- `cohort_year` / `cohort_month` — pulled from `first_purchase_date`, not re-derived from `cohort_date`
+- `cohort_index` — months elapsed since acquisition: `(year - cohort_year) * 12 + (month - cohort_month) + 1`, so a customer's first active month is index `1`. This formula holds across multi-year spans without special-casing year boundaries.
+
+The retention triangle is built by pivoting distinct customer counts — `groupby(['cohort_date', 'cohort_index'])['Customer ID'].nunique()` then `.pivot(index='cohort_date', columns='cohort_index', values='Customer ID')`. Column index `1` is each cohort's size; dividing every column by it (`cohort_pivot.divide(cohort_pivot.iloc[:, 0], axis=0) * 100`) gives retention %. The staircase of `NaN`s in the upper-right is structural, not missing data — later cohorts haven't had enough calendar time to reach higher cohort indices.
+
+The retention heatmap uses a single-hue sequential blue colormap (light→dark) per the repo's `dataviz` skill conventions, not the IBM Carbon categorical palette used in the k-means lab — the heatmap encodes one continuous magnitude (retention %), not discrete cluster categories.

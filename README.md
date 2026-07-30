@@ -8,6 +8,7 @@ A hands-on lab from the course _Product Analytics Unlocked: From Metrics to Mean
 2. **Pandas Hourly Aggregation** — Aggregate event data by hour with multiple metrics: session count, unique users, average duration, and most popular device.
 3. **Analytics Pipeline** — Build a `create_analytics_pipeline()` function that aggregates, optimizes data types for memory efficiency, and exports results to Parquet.
 4. **K-Means Clustering** — Customer segmentation on the Online Retail II dataset: clean transaction data (drop cancellations, non-standard stock codes, null customer IDs, non-positive prices), engineer RFM features (recency, frequency, monetary value) per customer, and cluster with K-Means.
+5. **Retention Cohort Analysis** — Time-based cohort retention on the Online Retail II dataset: derive each customer's acquisition cohort and cohort index (months since first purchase), then pivot into a retention triangle of active-customer counts and retention %.
 
 ## Getting Started
 
@@ -39,6 +40,10 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 │   ├── rfm_preprocessing_notes.md    # Preprocessing/clustering pipeline notes (log-transform, elbow, silhouette, choice of K)
 │   ├── cluster_interpretation.md     # Business interpretation of fitted K=4 clusters (segment names, revenue share, PM actions)
 │   └── CLAUDE.md                     # Dataset notes + IBM Carbon color requirement for plots
+├── retention_analysis/
+│   ├── retention_analytics.ipynb     # Time-based cohort retention analysis notebook
+│   ├── explainer.md                  # Cleaning, cohort derivation, retention pivot, and heatmap walkthrough
+│   └── retention_triangle.png        # Exported retention heatmap
 ├── requirements.txt
 └── CLAUDE.md
 ```
