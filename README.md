@@ -1,7 +1,3 @@
-# Product Analytics Learning Lab
-
-A hands-on lab from the course _Product Analytics Unlocked: From Metrics to Meaningful Insights_. It walks through core data aggregation techniques using a synthetic 50k-row user event dataset — no external data files required.
-
 ## What's Covered
 
 1. **SQL Dialect Comparison** — Write equivalent window function queries in ANSI-SQL and Spark-SQL, focusing on how window frame specification differs between dialects (`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` in Spark vs. implicit frames in ANSI).
@@ -19,34 +15,16 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 
 ## Project Structure
 
-```
-├── event data aggregation/
-│   ├── event_data_agg.ipynb   # Primary working notebook
-│   └── event_data_agg.py      # Script version (reference)
-├── data engg proj (MCP)/
-│   ├── demo_data.sql          # Synthetic e-commerce dataset (43k rows)
-│   ├── schema_diagram.mmd     # Mermaid ER diagram
-│   ├── docker_cheatsheet.md   # Docker CLI quick reference
-│   ├── audit_explained.md     # PostgreSQL performance audit walkthrough
-│   ├── indexes_explained.md   # Indexes explainer
-│   ├── README.md              # Setup guide for the Postgres environment
-│   └── analytics_dbt/        # dbt project for transforming e-commerce data
-│       ├── models/
-│       │   ├── customer_analytics.sql  # Customer-level analytics model
-│       │   └── schema.yml             # Column descriptions and tests
-│       └── dbt_project.yml
-├── k-means clustering/
-│   ├── kmeans_clustering.ipynb       # Customer segmentation notebook
-│   ├── rfm_preprocessing_notes.md    # Preprocessing/clustering pipeline notes (log-transform, elbow, silhouette, choice of K)
-│   ├── cluster_interpretation.md     # Business interpretation of fitted K=4 clusters (segment names, revenue share, PM actions)
-│   └── CLAUDE.md                     # Dataset notes + IBM Carbon color requirement for plots
-├── retention_analysis/
-│   ├── retention_analytics.ipynb     # Time-based cohort retention analysis notebook
-│   ├── explainer.md                  # Cleaning, cohort derivation, retention pivot, and heatmap walkthrough
-│   └── retention_triangle.png        # Exported retention heatmap
+```text
+├── event data aggregation/   # Lab 1-3: SQL dialects, pandas aggregation, analytics pipeline
+├── data engg proj (MCP)/     # Docker + Postgres + dbt data engineering project
+├── k-means clustering/       # Lab 4: RFM feature engineering and customer segmentation
+├── retention_analysis/       # Lab 5: cohort retention analysis and heatmap
 ├── requirements.txt
 └── CLAUDE.md
 ```
+
+Each lab folder has its own notes/docs alongside the notebook — see `k-means clustering/CLAUDE.md` and `retention_analysis/explainer.md` for the deeper walkthroughs, and `data engg proj (MCP)/README.md` for the Postgres/dbt setup.
 
 ## Key Dependencies
 
