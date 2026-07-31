@@ -26,8 +26,8 @@ models:
           - not_null
       - name: lifetime_value
         description: >
-          Sum of total_amount across all completed orders for this customer,
-          in USD. Customers with no orders receive 0 (not null) via COALESCE.
+          Sum of total_amount across all of this customer's orders (no status
+          filter applied), in USD. Customers with no orders receive 0 (not null) via COALESCE.
           Use this as the primary revenue metric for customer-level analysis.
         tests:
           - not_null

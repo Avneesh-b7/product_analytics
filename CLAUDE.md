@@ -95,6 +95,10 @@ Current models:
 
 - `customer_analytics` — joins all 4 `app` tables into a customer-level view with LTV, segmentation, and favorite category
 
+### Performance Audit
+
+`data engg proj (MCP)/db_audit.py` (`python db_audit.py`, requires `psycopg2-binary` and a `.env` with `DB_USER`/`DB_PASSWORD`/`DB_HOST`/`DB_PORT`/`DB_NAME`) checks table sizes, cache hit rate, and missing FK indexes on the `app` schema, and applies the recommended `CREATE INDEX CONCURRENTLY` statements. See `data engg proj (MCP)/audit_explainer.md` for what each check measures and `indexes_explainer.md` for the B-tree/ctid mechanics behind why the recommended indexes help.
+
 ### MCP Servers
 
 Configured in `.claude/settings.json` (project-level, gitignored):
@@ -123,11 +127,13 @@ A third lab in `k-means clustering/kmeans_clustering.ipynb` — customer segment
 
 **Read `k-means clustering/CLAUDE.md` before working in this folder** — it documents the dataset columns and requires all plots to use IBM Carbon Design Language colors (`https://www.ibm.com/design/language/color`), not the repo-wide dataviz defaults.
 
-Key data-cleaning steps applied before clustering: drop cancelled invoices (`Invoice` starting with `C`), drop non-standard `StockCode` values (not 5-digit numeric + optional single letter), drop rows with null `Customer ID`, drop non-positive `Price`. RFM features (`monetary_value`, `frequency`, `recency`) are aggregated to one row per `Customer ID` from the cleaned transaction-level data.
+Key data-cleaning steps applied before clustering: drop cancelled invoices (`Invoice` starting with `C`), drop non-standard `StockCode` values (not 5-digit numeric + optional single letter), drop rows with null `Customer ID`, drop non-positive `Price`. RFM features (`monetary_value`, `frequency`, `recency`) are aggregated to one row per `Customer ID` from the cleaned transaction-level data, then split by IQR on `monetary_value` into `whale_customers_df`/`low_val_cust_df`/`customer_df` — only `customer_df` (the main population) is log-transformed and clustered.
 
-**Read `k-means clustering/rfm_preprocessing_notes.md` for the full preprocessing/clustering pipeline** — log-transform before scaling (and why), elbow method + silhouette score explained, and the reasoning behind the chosen K (currently K=4).
+**Read `k-means clustering/rfm_preprocessing_explainer.md` for the full preprocessing/clustering pipeline** — log-transform before scaling (and why), elbow method + silhouette score explained, and the reasoning behind the chosen K (currently K=4).
 
-Recency in this lab is **raw days since last purchase**, not an inverted RFM score — low recency = bought recently = good. Business interpretation of the fitted K=4 clusters (segment names, revenue share, PM actions per segment) is documented in `k-means clustering/cluster_interpretation.md`.
+Recency in this lab is **raw days since last purchase**, not an inverted RFM score — low recency = bought recently = good. Business interpretation of the fitted K=4 clusters (segment names, revenue share, PM actions per segment) is documented in `k-means clustering/cluster_interpretation_explainer.md`.
+
+The clustered customer-level RFM data (`all_combined`, with the `cluster` label column) is exported from this notebook to `k-means clustering/all_combined.pkl` via `to_pickle`/`read_pickle` — this is the mechanism for sharing that DataFrame with the retention analysis lab without re-running the clustering pipeline. `.pkl` files are gitignored, so this file must be regenerated locally by re-running the export cell if missing.
 
 ## Retention Analysis Lab
 

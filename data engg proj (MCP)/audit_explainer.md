@@ -35,6 +35,8 @@ CREATE INDEX CONCURRENTLY idx_order_items_product_id  ON app.order_items (produc
 
 `CONCURRENTLY` means the index is built in the background without locking the table.
 
+`db_audit.py`'s `RECOMMENDED_INDEXES` also defines two more targeted indexes beyond these FK indexes — a partial index (`idx_orders_status_active`) and a covering index (`idx_orders_customer_revenue`). Those aren't about missing FK coverage, so they're covered in `indexes_explainer.md` instead.
+
 ---
 
 ## 4. EXPLAIN ANALYZE

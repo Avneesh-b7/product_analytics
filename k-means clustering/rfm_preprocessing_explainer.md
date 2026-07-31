@@ -3,7 +3,8 @@
 ## The pipeline order
 
 ```
-raw transactions → clean → aggregate to RFM (customer-level) → log-transform → scale → cluster
+raw transactions → clean → aggregate to RFM (customer-level) → IQR-split whales/low-value →
+log-transform → scale → cluster
 ```
 
 Each step depends on the one before it, so the order isn't optional:
@@ -14,8 +15,12 @@ Each step depends on the one before it, so the order isn't optional:
    - `monetary_value` = sum(`Quantity * Price`)
    - `frequency` = count(distinct `Invoice`)
    - `recency` = days since last purchase (relative to a reference date, usually max date + 1)
-3. **Log-transform** the skewed features (typically `monetary_value` and `frequency`).
-4. **Scale** with `StandardScaler` — always last.
+3. **Split off whales and low-value customers by IQR** on `monetary_value` before scaling —
+   see "Handling extreme outliers (whales)" below. What's left (`customer_df`) is the
+   population that actually gets clustered.
+4. **Log-transform** all three RFM features (`monetary_value`, `frequency`, and `recency` —
+   `recency` is log-transformed too, not just the other two).
+5. **Scale** with `StandardScaler` — always last.
 
 You can't scale before aggregating (there's no customer-level feature to scale yet), and
 you can't scale before log-transforming (see below — scaling doesn't fix skew, only units).
@@ -58,11 +63,17 @@ the raw features are as skewed as retail RFM data typically is.**
 
 ## Handling extreme outliers (whales)
 
-Even after log-transforming, a few genuine outliers (e.g. wholesale/B2B accounts with
-monetary_value far beyond typical retail customers) may still warrant separate handling:
-- Cap at a high percentile (e.g. 99th), or
-- Segment them into a separate "VIP/wholesale" bucket rather than letting them influence
-  the main customer clusters.
+This notebook removes extreme outliers by IQR on `monetary_value` *before* log-transforming
+and scaling, splitting the aggregated RFM table into three DataFrames:
+
+- `whale_customers_df` — above the upper IQR bound (wholesale/B2B-scale spenders)
+- `low_val_cust_df` — below the lower IQR bound
+- `customer_df` — the remaining "main" population, which is what actually gets
+  log-transformed, scaled, and clustered
+
+Whales and low-value customers are re-joined back into `all_combined` after clustering
+(see the cluster interpretation doc), but they don't influence where the K-Means centroids
+land.
 
 ## Picking K
 
@@ -136,5 +147,5 @@ nearest other cluster?*
   total revenue, which changes how much retention effort it deserves.
 - Turn cluster numbers into labels (e.g. "Champions", "At Risk", "Low-Value Frequent")
   based on the profile — that's the actual deliverable, not the raw cluster ID.
-  **See `cluster_interpretation.md` for the labels, revenue share, and business actions
+  **See `cluster_interpretation_explainer.md` for the labels, revenue share, and business actions
   assigned to each of the 4 clusters in this notebook.**

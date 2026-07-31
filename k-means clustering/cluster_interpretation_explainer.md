@@ -26,7 +26,7 @@ Business interpretation of the four customer segments produced by the K-means cl
 
 ## Cluster 2 — Growth / Potential Loyalists
 
-**Profile:** Moderate monetary value (median ~$950), moderate-to-good frequency (median ~3), decent recency (median ~50-80 days, second-best after Cluster 0).
+**Profile:** Moderate monetary value and frequency, third-best recency of the four clusters (mean ~107 days since last purchase — behind Cluster 0 at ~21 and Cluster 3 at ~29, but well ahead of Cluster 1's ~200).
 
 **Segment size:** 1,028 of 3,811 customers (~27%), contributing ~35% of total revenue.
 
@@ -39,7 +39,7 @@ These customers are engaged and spending reasonably well, but haven't reached Ch
 
 ## Cluster 3 — Occasional / New Customers
 
-**Profile:** Low monetary value, low frequency, but low (good) recency days (median ~20 days, second-most recent after Cluster 0).
+**Profile:** Low monetary value, low frequency, but low (good) recency days (mean ~29 days, second-most recent after Cluster 0's ~21).
 
 **Segment size:** 849 of 3,811 customers (~22%).
 
