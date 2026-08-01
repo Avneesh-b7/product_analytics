@@ -43,5 +43,15 @@ data engg proj (MCP)/logs/
 *.xlsx 
 
 #pickle files
-*.pkl 
+*.pkl
+
+#pgn files
+*.png
+
+# AB testing dataset
+Experimentation/ecommerce_ab_testing_2022_dataset1/
+
+# Sales and satisfaction dataset
+Experimentation/data/
+
 

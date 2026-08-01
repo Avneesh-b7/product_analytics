@@ -153,3 +153,18 @@ Cohort construction, all derived from `InvoiceDate`:
 The retention triangle is built by pivoting distinct customer counts — `groupby(['cohort_date', 'cohort_index'])['Customer ID'].nunique()` then `.pivot(index='cohort_date', columns='cohort_index', values='Customer ID')`. Column index `1` is each cohort's size; dividing every column by it (`cohort_pivot.divide(cohort_pivot.iloc[:, 0], axis=0) * 100`) gives retention %. The staircase of `NaN`s in the upper-right is structural, not missing data — later cohorts haven't had enough calendar time to reach higher cohort indices.
 
 The retention heatmap uses a single-hue sequential blue colormap (light→dark) per the repo's `dataviz` skill conventions, not the IBM Carbon categorical palette used in the k-means lab — the heatmap encodes one continuous magnitude (retention %), not discrete cluster categories.
+
+## Experimentation Lab (A/B Testing)
+
+A fifth lab in `Experimentation/statistical_testing1.0.ipynb` — A/B test analysis on the Kaggle **sales-and-satisfaction** dataset (`matinmahmoudi/sales-and-satisfaction`).
+
+Read `Experimentation/ab_testing_explainer.md` for the framework this lab follows: PLAN (hypothesis, primary/guardrail metrics, sample size and test duration via baseline conversion rate, MDE, confidence, and power) → RUN → EVALUATE (lift, p-value, confidence interval) → TAKE ACTION.
+
+The dataset is pulled via the `kaggle` CLI, not `kagglehub` — it downloads straight into `Experimentation/data/` instead of the kagglehub cache, so no copy step is needed:
+
+```bash
+kaggle datasets download -d matinmahmoudi/sales-and-satisfaction \
+  -p "Experimentation/data/sales-and-satisfaction" --unzip
+```
+
+Requires a Kaggle API token at `~/.kaggle/kaggle.json` (from Kaggle account settings → Create New Token). `Experimentation/data/` is gitignored — regenerate by rerunning the download cell if missing.

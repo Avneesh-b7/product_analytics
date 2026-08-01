@@ -5,6 +5,7 @@
 3. **Analytics Pipeline** — Build a `create_analytics_pipeline()` function that aggregates, optimizes data types for memory efficiency, and exports results to Parquet.
 4. **K-Means Clustering** — Customer segmentation on the Online Retail II dataset: clean transaction data (drop cancellations, non-standard stock codes, null customer IDs, non-positive prices), engineer RFM features (recency, frequency, monetary value) per customer, and cluster with K-Means.
 5. **Retention Cohort Analysis** — Time-based cohort retention on the Online Retail II dataset: derive each customer's acquisition cohort and cohort index (months since first purchase), then pivot into a retention triangle of active-customer counts and retention %.
+6. **A/B Testing** — Statistical testing on the Kaggle sales-and-satisfaction dataset, following a PLAN → RUN → EVALUATE → TAKE ACTION framework (hypothesis, sample size/power, lift, p-value, confidence interval).
 
 ## Getting Started
 
@@ -20,11 +21,12 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 ├── data engg proj (MCP)/     # Docker + Postgres + dbt data engineering project
 ├── k-means clustering/       # Lab 4: RFM feature engineering and customer segmentation
 ├── retention_analysis/       # Lab 5: cohort retention analysis and heatmap
+├── Experimentation/          # Lab 6: A/B testing framework and statistical testing
 ├── requirements.txt
 └── CLAUDE.md
 ```
 
-Each lab folder has its own notes/docs alongside the notebook — see `k-means clustering/CLAUDE.md` and `retention_analysis/explainer.md` for the deeper walkthroughs, and `data engg proj (MCP)/README.md` for the Postgres/dbt setup.
+Each lab folder has its own notes/docs alongside the notebook — see `k-means clustering/CLAUDE.md` and `retention_analysis/explainer.md` for the deeper walkthroughs, `Experimentation/ab_testing_explainer.md` for the A/B testing framework, and `data engg proj (MCP)/README.md` for the Postgres/dbt setup.
 
 ## Key Dependencies
 
@@ -34,3 +36,5 @@ Each lab folder has its own notes/docs alongside the notebook — see `k-means c
 - `plotly` — EDA visualizations
 - `dbt-postgres` — SQL transformation layer for the data engg project
 - `scikit-learn`, `matplotlib`, `seaborn`, `openpyxl` — K-means clustering lab
+- `statsmodels` — statistical testing in the Experimentation lab
+- `kaggle` — downloads the Experimentation lab dataset
