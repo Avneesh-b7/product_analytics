@@ -154,17 +154,21 @@ The retention triangle is built by pivoting distinct customer counts — `groupb
 
 The retention heatmap uses a single-hue sequential blue colormap (light→dark) per the repo's `dataviz` skill conventions, not the IBM Carbon categorical palette used in the k-means lab — the heatmap encodes one continuous magnitude (retention %), not discrete cluster categories.
 
-## Experimentation Lab (A/B Testing)
+## Experimentation Lab (Hypothesis Testing)
 
-A fifth lab in `Experimentation/statistical_testing1.0.ipynb` — A/B test analysis on the Kaggle **sales-and-satisfaction** dataset (`matinmahmoudi/sales-and-satisfaction`).
+A fifth lab in `Experimentation/hypothesis_testing1.0.ipynb` — A/B test analysis on the Kaggle **ab-testing-dataset** (`amirmotefaker/ab-testing-dataset`), comparing a control campaign vs. a test campaign across 30 days.
 
-Read `Experimentation/ab_testing_explainer.md` for the framework this lab follows: PLAN (hypothesis, primary/guardrail metrics, sample size and test duration via baseline conversion rate, MDE, confidence, and power) → RUN → EVALUATE (lift, p-value, confidence interval) → TAKE ACTION.
-
-The dataset is pulled via the `kaggle` CLI, not `kagglehub` — it downloads straight into `Experimentation/data/` instead of the kagglehub cache, so no copy step is needed:
+The dataset has two semicolon-delimited CSVs (`control_group.csv`, `test_group.csv`) and is loaded with `sep=";"`. Download it with:
 
 ```bash
-kaggle datasets download -d matinmahmoudi/sales-and-satisfaction \
-  -p "Experimentation/data/sales-and-satisfaction" --unzip
+kaggle datasets download -d amirmotefaker/ab-testing-dataset \
+  -p "Experimentation/data/ab-testing-dataset" --unzip
 ```
 
 Requires a Kaggle API token at `~/.kaggle/kaggle.json` (from Kaggle account settings → Create New Token). `Experimentation/data/` is gitignored — regenerate by rerunning the download cell if missing.
+
+The lab tests CTR (clicks / impressions) using two approaches:
+1. **Two-proportion z-test** — treats each impression as a Bernoulli trial; uses pooled proportion under H₀; normality checked via success-failure condition (n × p̂ > 10)
+2. **Welch's t-test on daily CTR** — treats each of the 29 daily CTR values as one observation; accounts for day-to-day variance; normality checked via Q-Q plots
+
+Both are one-tailed (H₁: CTR_test > CTR_control) at α = 0.10 (90% confidence). Derived metrics added to both DataFrames: CTR, Conversion Rate, Cost per Click, Cost per Purchase, Add-to-Cart Rate.

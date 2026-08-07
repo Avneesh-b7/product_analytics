@@ -1,11 +1,11 @@
-## What's Covered
+# What's Covered
 
 1. **SQL Dialect Comparison** — Write equivalent window function queries in ANSI-SQL and Spark-SQL, focusing on how window frame specification differs between dialects (`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` in Spark vs. implicit frames in ANSI).
 2. **Pandas Hourly Aggregation** — Aggregate event data by hour with multiple metrics: session count, unique users, average duration, and most popular device.
 3. **Analytics Pipeline** — Build a `create_analytics_pipeline()` function that aggregates, optimizes data types for memory efficiency, and exports results to Parquet.
 4. **K-Means Clustering** — Customer segmentation on the Online Retail II dataset: clean transaction data (drop cancellations, non-standard stock codes, null customer IDs, non-positive prices), engineer RFM features (recency, frequency, monetary value) per customer, and cluster with K-Means.
 5. **Retention Cohort Analysis** — Time-based cohort retention on the Online Retail II dataset: derive each customer's acquisition cohort and cohort index (months since first purchase), then pivot into a retention triangle of active-customer counts and retention %.
-6. **A/B Testing** — Statistical testing on the Kaggle sales-and-satisfaction dataset, following a PLAN → RUN → EVALUATE → TAKE ACTION framework (hypothesis, sample size/power, lift, p-value, confidence interval).
+6. **Hypothesis Testing** — A/B test analysis on the Kaggle `amirmotefaker/ab-testing-dataset` (control vs. test campaign, 30 days each). Tests CTR using a two-proportion z-test and a Welch's t-test on daily CTR values, including normality checks (success-failure condition, Q-Q plots), one-tailed hypothesis setup at α=0.10, and lift calculation.
 
 ## Getting Started
 
@@ -26,7 +26,7 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 └── CLAUDE.md
 ```
 
-Each lab folder has its own notes/docs alongside the notebook — see `k-means clustering/CLAUDE.md` and `retention_analysis/explainer.md` for the deeper walkthroughs, `Experimentation/ab_testing_explainer.md` for the A/B testing framework, and `data engg proj (MCP)/README.md` for the Postgres/dbt setup.
+Each lab folder has its own notes/docs alongside the notebook — see `k-means clustering/CLAUDE.md` and `retention_analysis/explainer.md` for the deeper walkthroughs, and `data engg proj (MCP)/README.md` for the Postgres/dbt setup.
 
 ## Key Dependencies
 
