@@ -168,7 +168,31 @@ kaggle datasets download -d amirmotefaker/ab-testing-dataset \
 Requires a Kaggle API token at `~/.kaggle/kaggle.json` (from Kaggle account settings → Create New Token). `Experimentation/data/` is gitignored — regenerate by rerunning the download cell if missing.
 
 The lab tests CTR (clicks / impressions) using two approaches:
+
 1. **Two-proportion z-test** — treats each impression as a Bernoulli trial; uses pooled proportion under H₀; normality checked via success-failure condition (n × p̂ > 10)
 2. **Welch's t-test on daily CTR** — treats each of the 29 daily CTR values as one observation; accounts for day-to-day variance; normality checked via Q-Q plots
 
 Both are one-tailed (H₁: CTR_test > CTR_control) at α = 0.10 (90% confidence). Derived metrics added to both DataFrames: CTR, Conversion Rate, Cost per Click, Cost per Purchase, Add-to-Cart Rate.
+
+## A/B Test Lab (Conversion Rate)
+
+A sixth lab in `Experimentation/a_b_test1.0.ipynb` — end-to-end A/B test on a product page conversion rate using the **Udacity A/B Testing dataset** (`ab_data.csv`, 294k rows).
+
+Dataset lives at `Experimentation/data/ab_testing_dataset_new/ab_data.csv`. Columns: `user_id`, `timestamp`, `group` (control/treatment), `landing_page` (old_page/new_page), `converted`.
+
+**Scenario:** baseline conversion rate 13%, team wants to detect a +2pp lift (target 15%).
+
+**Cleaning steps:** drop mismatched group/page rows (control on new_page and vice versa), then deduplicate on `user_id` (keep first visit) → 290,584 clean rows.
+
+**Experiment design (set upfront before any test):**
+
+- H₀: CR_treatment = CR_control (two-tailed)
+- α = 0.05, Power = 0.80, MDE = 2pp absolute
+- Required sample size: 4,720 per group (computed via `NormalIndPower` + `proportion_effectsize`)
+- Test duration check: at ~13,837 users/day the required sample is reached in under 1 day; dataset runs 21 days so sample is more than adequate
+
+**Test:** two-proportion z-test (`proportions_ztest`, two-sided). Normality validated via success-failure condition (n × p̂ > 10). A random sample of 4,720 per group is drawn (simulating the point at which the test would have been called).
+
+**Visualisation:** single combined plot — standard normal curve with rejection regions (red), p-value area (blue), observed z-statistic (dashed blue), critical z boundaries (dotted red), and a 95% CI bar (purple) plotted below the curve with difference-scale annotations.
+
+**Conclusion framework:** four-step structured report — (1) statistical significance, (2) effect size and direction vs MDE, (3) CI check, (4) Ship / Do Not Ship verdict with three-line reason. Result for this dataset: p = 0.70, not significant, genuine null (sample was adequately powered).

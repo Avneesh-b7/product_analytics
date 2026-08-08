@@ -6,6 +6,7 @@
 4. **K-Means Clustering** — Customer segmentation on the Online Retail II dataset: clean transaction data (drop cancellations, non-standard stock codes, null customer IDs, non-positive prices), engineer RFM features (recency, frequency, monetary value) per customer, and cluster with K-Means.
 5. **Retention Cohort Analysis** — Time-based cohort retention on the Online Retail II dataset: derive each customer's acquisition cohort and cohort index (months since first purchase), then pivot into a retention triangle of active-customer counts and retention %.
 6. **Hypothesis Testing** — A/B test analysis on the Kaggle `amirmotefaker/ab-testing-dataset` (control vs. test campaign, 30 days each). Tests CTR using a two-proportion z-test and a Welch's t-test on daily CTR values, including normality checks (success-failure condition, Q-Q plots), one-tailed hypothesis setup at α=0.10, and lift calculation.
+7. **A/B Test — Conversion Rate** — End-to-end A/B test on a product page (Udacity dataset, 294k rows). Covers full experiment design upfront (hypothesis, MDE, sample size, test duration), two-proportion z-test (two-tailed, α=0.05), combined visualisation of p-value / rejection regions / 95% CI on a single z-distribution chart, and a structured four-step conclusion framework (significance → effect size → CI → Ship/No-Ship verdict).
 
 ## Getting Started
 
