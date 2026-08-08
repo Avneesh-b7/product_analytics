@@ -196,3 +196,13 @@ Dataset lives at `Experimentation/data/ab_testing_dataset_new/ab_data.csv`. Colu
 **Visualisation:** single combined plot — standard normal curve with rejection regions (red), p-value area (blue), observed z-statistic (dashed blue), critical z boundaries (dotted red), and a 95% CI bar (purple) plotted below the curve with difference-scale annotations.
 
 **Conclusion framework:** four-step structured report — (1) statistical significance, (2) effect size and direction vs MDE, (3) CI check, (4) Ship / Do Not Ship verdict with three-line reason. Result for this dataset: p = 0.70, not significant, genuine null (sample was adequately powered).
+
+## A/B Testing Practice Lab
+
+A seventh lab in `Experimentation/smart-ab_testing.ipynb` — structured scenario-based practice for the full A/B test pipeline. No external dataset; results are provided as part of each scenario prompt.
+
+**Scenario 1 — Checkout page conversion rate:** two-tailed two-proportion z-test, baseline 12%, 12% relative MDE (→ 1.44pp absolute), α=0.05, power=80%, 3,000 visitors/day 50/50 split. Result: p=0.033, significant, but lift (+1.09pp) fell short of MDE (+1.44pp) — Do Not Ship yet.
+
+**Scenario 2 — Ad creative CTR:** one-tailed two-proportion z-test, baseline CTR 3%, 15% relative MDE (→ 0.45pp absolute), α=0.05, power=80%, 5,000 impressions/day per variant. Guardrail: CPC must not rise. Result: p=0.021, significant, but lift (+0.36pp) fell short of MDE (+0.45pp) and CI lower bound nearly zero — Do Not Ship yet.
+
+Each scenario follows an 8-step pipeline: hypotheses → MDE → sample size → duration → guardrails → run test → statistical test → interpret and conclude. Includes a reusable 6-check Ship vs No-Ship checklist (p-value, direction, lift vs MDE, CI excludes zero, CI lower vs MDE, guardrails).
