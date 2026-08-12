@@ -223,7 +223,7 @@ An eighth lab in `e2e_project/` — end-to-end analysis on synthetic FitTrack da
 
 ### Data Files
 
-`e2e_project/data/` is gitignored. Two files used:
+`e2e_project/data/` is gitignored. Three files used:
 
 - `user_behavior_data.csv` — 10,000 users with `user_id`, `signup_date`, `last_active_date`, `total_sessions`, `revenue`, `acquisition_channel`
 - `users.csv` — `user_id`, `signup_date`, `acquisition_channel`
