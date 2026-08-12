@@ -8,6 +8,7 @@
 6. **Hypothesis Testing** — A/B test analysis on the Kaggle `amirmotefaker/ab-testing-dataset` (control vs. test campaign, 30 days each). Tests CTR using a two-proportion z-test and a Welch's t-test on daily CTR values, including normality checks (success-failure condition, Q-Q plots), one-tailed hypothesis setup at α=0.10, and lift calculation.
 7. **A/B Test — Conversion Rate** — End-to-end A/B test on a product page (Udacity dataset, 294k rows). Covers full experiment design upfront (hypothesis, MDE, sample size, test duration), two-proportion z-test (two-tailed, α=0.05), combined visualisation of p-value / rejection regions / 95% CI on a single z-distribution chart, and a structured four-step conclusion framework (significance → effect size → CI → Ship/No-Ship verdict).
 8. **A/B Testing Practice** — Scenario-based practice notebook (`smart-ab_testing.ipynb`) covering the full 8-step pipeline across two scenarios (checkout page conversion rate, ad creative CTR). Includes one-tailed vs two-tailed decision logic, guardrail metrics, sample size calculation with manual formula + statsmodels, and a reusable 6-check Ship vs No-Ship checklist.
+9. **E2E Project** — End-to-end analysis on synthetic FitTrack data combining clustering, cohort retention, and A/B testing. Covers outlier detection and segmentation, RFM feature engineering, K-Means segmentation (K=6 core clusters + 3 outlier segments: Champions, Frequent Users, High Monetary Value), and N-day and rolling retention by acquisition channel using DuckDB SQL.
 
 ## Getting Started
 
@@ -24,6 +25,7 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 ├── k-means clustering/       # Lab 4: RFM feature engineering and customer segmentation
 ├── retention_analysis/       # Lab 5: cohort retention analysis and heatmap
 ├── Experimentation/          # Lab 6: A/B testing framework and statistical testing
+├── e2e_project/              # Lab 9: E2E clustering + cohort retention + experimentation
 ├── requirements.txt
 └── CLAUDE.md
 ```
@@ -40,3 +42,4 @@ Each lab folder has its own notes/docs alongside the notebook — see `k-means c
 - `scikit-learn`, `matplotlib`, `seaborn`, `openpyxl` — K-means clustering lab
 - `statsmodels` — statistical testing in the Experimentation lab
 - `kaggle` — downloads the Experimentation lab dataset
+- `duckdb` — SQL queries on CSVs in the e2e cohort analysis

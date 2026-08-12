@@ -210,3 +210,39 @@ A seventh lab in `Experimentation/smart-ab_testing.ipynb` — structured scenari
 **Scenario 4 — Meta ad targeting algorithm (feasibility):** one-tailed two-proportion z-test, baseline CTR assumed 2% (not given in prompt — typical for display ads), 12% relative MDE (→ +0.24pp absolute), α=0.05, power=80%. Traffic constraint: 2.5M impressions/day × 30% cap = 750k/day total, 375k per group. Max duration: 6 weeks (42 days) → 15.75M impressions per group budget. Includes three sensitivity tables — (1) vary α, (2) vary power, (3) vary relative MDE — each showing how sample size and test duration shift, with business justification for why each parameter moves n in its direction. MDE is the biggest lever: 5% MDE vs 20% MDE can differ by 10–20× in required sample size.
 
 Each scenario follows an 8-step pipeline: hypotheses → MDE → sample size → duration → guardrails → run test → statistical test → interpret and conclude. Includes a reusable 6-check Ship vs No-Ship checklist (p-value, direction, lift vs MDE, CI excludes zero, CI lower vs MDE, guardrails).
+
+## E2E Project
+
+An eighth lab in `e2e_project/` — end-to-end analysis on synthetic FitTrack data (10,000 users) combining clustering, cohort retention, and experimentation into one unified workflow.
+
+### Notebooks
+
+- `clustering.ipynb` — RFM segmentation pipeline
+- `cohort.ipynb` — retention analysis using DuckDB SQL
+- `experiment.ipynb` — A/B test analysis (in progress)
+
+### Data Files
+
+`e2e_project/data/` is gitignored. Two files used:
+
+- `user_behavior_data.csv` — 10,000 users with `user_id`, `signup_date`, `last_active_date`, `total_sessions`, `revenue`, `acquisition_channel`
+- `users.csv` — `user_id`, `signup_date`, `acquisition_channel`
+- `activity_log.csv` — `user_id`, `workout_logged_date` (one row per activity event)
+
+### Clustering pipeline (`clustering.ipynb`)
+
+1. Load data, fill null revenue with 0
+2. Outlier detection via IQR on `total_sessions` and `revenue` — outliers separated into `high_sessions_df`, `high_revenue_df`, `overlap_df` (both); cleaned population goes into `df`
+3. Build RFM: recency = days from `last_active_date` to reference date `2024-03-31`, frequency = `total_sessions`, monetary = `revenue`
+4. Log-transform (`log1p`) all three features before scaling
+5. StandardScaler on log-transformed features
+6. Elbow method + silhouette score → K=6 chosen
+7. KMeans(K=6) fitted on scaled features; labels assigned back to `rfm_df` then merged into `df`
+8. Outlier groups labelled: `overlap_df` = "Champions", `high_sessions_df` = "Frequent Users", `high_revenue_df` = "High Monetary Value"
+9. All groups stacked into `master_df`; numeric clusters mapped to names:
+   - 0 → Active Free Users, 1 → At-Risk Paying Users, 2 → Dormant Free Users
+   - 3 → Active Paying Users, 4 → Churned / Inactive, 5 → Lapsed High-Value Users
+
+### Cohort pipeline (`cohort.ipynb`)
+
+Uses DuckDB for all SQL analysis. Tables loaded via `duckdb.connect()` + `CREATE TABLE AS SELECT * FROM read_csv_auto(...)`. Retention metrics (N-day and rolling) computed entirely in SQL — no pandas transformation layer.
