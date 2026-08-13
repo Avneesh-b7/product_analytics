@@ -246,3 +246,16 @@ An eighth lab in `e2e_project/` — end-to-end analysis on synthetic FitTrack da
 ### Cohort pipeline (`cohort.ipynb`)
 
 Uses DuckDB for all SQL analysis. Tables loaded via `duckdb.connect()` + `CREATE TABLE AS SELECT * FROM read_csv_auto(...)`. Retention metrics (N-day and rolling) computed entirely in SQL — no pandas transformation layer.
+
+Pipeline steps:
+
+1. Load `users.csv` and `activity_log.csv` into DuckDB as `users` and `activity` tables
+2. Explore date ranges: `signup_date` spans 2024-01-01 – 2024-03-24; `workout_logged_date` spans 2024-01-08 – 2024-03-15 (snapshot cutoff)
+3. Week-bucketing: use DuckDB `week(workout_logged_date)` to get ISO week number; compute `week_signup_cohortindex = week_of_activity - week_of_signup + 1` so week 1 = the user's signup week
+4. Join activity weeks to users; users with no activity appear as NaN (`LEFT JOIN` produces nulls for inactive users)
+5. **N-day retention**: % of cohort active in exactly week N (boolean per user per week, then avg across cohort)
+6. **Rolling retention**: % of cohort active in week N or any subsequent week (always ≥ N-day; if it isn't, there's a bug)
+7. **Observation-window correction**: compute `max_observable_week` per user from their `signup_date` against snapshot cutoff `2024-03-15`; exclude weeks that haven't elapsed yet from the denominator — omitting this makes recent cohorts look artificially under-retained
+8. **Channel-level curves**: break retention (week 1–8) by `acquisition_channel` — identify best long-term channel, channels that spike early then crater (paid/social pattern), and noisiest channels (small N)
+9. **Anomaly detection**: compare cohorts on week-1 retention — one cohort stands out (outage signal); confirm it's cohort-specific not channel-specific (operational issue, not acquisition-quality issue)
+10. **Seasonality check**: verify that retention bumps align with weeks-since-signup rather than calendar date — calendar-driven bumps indicate seasonal effect, not genuine engagement improvement
