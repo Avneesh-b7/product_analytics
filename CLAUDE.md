@@ -219,7 +219,7 @@ An eighth lab in `e2e_project/` — end-to-end analysis on synthetic FitTrack da
 
 - `clustering.ipynb` — RFM segmentation pipeline
 - `cohort.ipynb` — retention analysis using DuckDB SQL
-- `experiment.ipynb` — A/B test analysis (in progress)
+- `experiment.ipynb` — A/B test analysis (complete)
 
 ### Data Files
 
@@ -260,3 +260,21 @@ Pipeline steps:
 9. **Observation-window correction**: each metric needs its own eligible denominator — users too close to the snapshot cutoff are excluded from the denominator but their data still appears in the flagged table; correction only applies at aggregation time via `CASE WHEN cohort_week + N + window <= cutoff_week`
 10. **Anomaly detection**: cohort 6 (Feb 5 week) shows depressed week-1 retention across ALL channels simultaneously → operational issue (bug/outage), not acquisition-quality problem
 11. **Seasonality check**: weeks 5–6 uptick for cohort 1 maps to mid-February on the calendar and appears across all channels at the same calendar date but different relative weeks → platform-wide event, not cohort quality signal
+
+### Experiment pipeline (`experiment.ipynb`)
+
+Uses DuckDB for all analysis. `experiment_data.csv` loaded via `read_csv_auto()`; `conversion_date` renamed to `measurement_date` at load time via `CAST`.
+
+Dataset: 10,000 users (5,000 per group), 21 days (Feb 1–21, 2024), 210,000 rows. One row per user × day with `converted` and `daily_activity_flag`.
+
+**Metric definition:** daily activity-based conversion rate = `sum(converted) / sum(daily_activity_flag)`. Each active user-day is one observation. This aligns with the 7% historical baseline used in power analysis.
+
+Pipeline steps:
+
+1. **Data load**: DuckDB `CREATE TABLE experiment AS SELECT ... CAST(conversion_date AS DATE) AS measurement_date ...`
+2. **Novelty effect check**: weekly CR by group using `week(measurement_date)`; grouped bar chart with per-week lift annotations. Week 1 treatment CR spikes ~3pp above stable weeks 2–3 → novelty effect confirmed
+3. **Exposure balance (SRM check)**: `scipy.stats.chisquare` on group sizes vs expected 50/50; also checks date range and avg days active per group. Result: perfectly balanced, no SRM
+4. **Power analysis (relative MDE)**: baseline 7%, scenarios 2%/5%/10% relative lift → required n = 526k/85k/22k per group. All exceed actual n (5,000) — underpowered for small relative effects
+5. **Power analysis (absolute MDE)**: same baseline, scenarios +2pp/+5pp/+10pp → required n = 2,878/531/159 per group. All achievable with 5,000 users
+6. **Z-test (post-novelty)**: filters to `measurement_date >= '2024-02-08'` (weeks 2–3 only); `proportions_ztest` two-tailed; 95% CI on difference via normal approximation. Result: Control 6.90%, Treatment 8.04%, lift +1.14pp, p ≈ 0, CI [+0.77pp, +1.51pp]
+7. **Conclusion**: statistically significant (p < 0.001) but lift (+1.14pp) < MDE (+2pp absolute) and CI upper bound (+1.51pp) still below MDE → **Do Not Ship Yet**. Recommended actions: extend experiment 1–2 weeks, or revisit MDE threshold with stakeholders
