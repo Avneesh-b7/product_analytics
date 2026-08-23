@@ -125,7 +125,7 @@ Synthetic e-commerce data, 43,000 rows across 4 tables in the `app` schema:
 
 A third lab in `k-means clustering/kmeans_clustering.ipynb` — customer segmentation on the **Online Retail II** dataset (`online_retail_II.xlsx`, sheet `Year 2009-2010`).
 
-**Read `k-means clustering/CLAUDE.md` before working in this folder** — it documents the dataset columns and requires all plots to use IBM Carbon Design Language colors (`https://www.ibm.com/design/language/color`), not the repo-wide dataviz defaults.
+**Read `k-means clustering/CLAUDE.md` before working in this folder** — it documents the dataset columns and requires all plots to use the repo's `dataviz` skill categorical palette (distinct hues per cluster), not a single-hue sequential palette.
 
 Key data-cleaning steps applied before clustering: drop cancelled invoices (`Invoice` starting with `C`), drop non-standard `StockCode` values (not 5-digit numeric + optional single letter), drop rows with null `Customer ID`, drop non-positive `Price`. RFM features (`monetary_value`, `frequency`, `recency`) are aggregated to one row per `Customer ID` from the cleaned transaction-level data, then split by IQR on `monetary_value` into `whale_customers_df`/`low_val_cust_df`/`customer_df` — only `customer_df` (the main population) is log-transformed and clustered.
 
@@ -152,7 +152,7 @@ Cohort construction, all derived from `InvoiceDate`:
 
 The retention triangle is built by pivoting distinct customer counts — `groupby(['cohort_date', 'cohort_index'])['Customer ID'].nunique()` then `.pivot(index='cohort_date', columns='cohort_index', values='Customer ID')`. Column index `1` is each cohort's size; dividing every column by it (`cohort_pivot.divide(cohort_pivot.iloc[:, 0], axis=0) * 100`) gives retention %. The staircase of `NaN`s in the upper-right is structural, not missing data — later cohorts haven't had enough calendar time to reach higher cohort indices.
 
-The retention heatmap uses a single-hue sequential blue colormap (light→dark) per the repo's `dataviz` skill conventions, not the IBM Carbon categorical palette used in the k-means lab — the heatmap encodes one continuous magnitude (retention %), not discrete cluster categories.
+The retention heatmap uses a single-hue sequential blue colormap (light→dark) per the repo's `dataviz` skill conventions, not the categorical palette used in the k-means lab — the heatmap encodes one continuous magnitude (retention %), not discrete cluster categories.
 
 ## Experimentation Lab (Hypothesis Testing)
 
@@ -278,3 +278,20 @@ Pipeline steps:
 5. **Power analysis (absolute MDE)**: same baseline, scenarios +2pp/+5pp/+10pp → required n = 2,878/531/159 per group. All achievable with 5,000 users
 6. **Z-test (post-novelty)**: filters to `measurement_date >= '2024-02-08'` (weeks 2–3 only); `proportions_ztest` two-tailed; 95% CI on difference via normal approximation. Result: Control 6.90%, Treatment 8.04%, lift +1.14pp, p ≈ 0, CI [+0.77pp, +1.51pp]
 7. **Conclusion**: statistically significant (p < 0.001) but lift (+1.14pp) < MDE (+2pp absolute) and CI upper bound (+1.51pp) still below MDE → **Do Not Ship Yet**. Recommended actions: extend experiment 1–2 weeks, or revisit MDE threshold with stakeholders
+
+## Funnel Analytics Project
+
+A ninth project in `funnel_analytics/` — a marketing-to-customer conversion funnel built directly in BigQuery SQL (no notebook), analyzing the public `bigquery-public-data.ga4_obfuscated_sample_ecommerce` dataset (2020-11-01 to 2021-01-31, 92 days, 4.3M events, 270k users).
+
+**Read `funnel_analytics/README.md` for the consolidated spec, build log, and results.** Per-phase detail also lives in `funnel_analytics/phase1_spec.md` (stage/attribution/window spec) and `funnel_analytics/phase4_5_join_and_validation.md` (join logic, the `TIMESTAMP_DIFF` day-rounding bug and its fix, and validation findings). `funnel_analytics/funnel_project_checklist.md` tracks phase-by-phase progress; `funnel_analytics/funnel_think.md` is informal working notes on stage selection and is gitignored.
+
+Key design decisions:
+
+- **Funnel stages**: `session_start` → `view_item` → `add_to_cart` → `begin_checkout` → `add_payment_info` → `purchase`. `add_shipping_info` is deliberately excluded as a near-duplicate of `begin_checkout` (~99.99% overlap).
+- **Attribution**: strict first-touch, anchored to each user's true first `session_start` — never re-anchored to a later session.
+- **Conversion window**: 30 days from first session, chosen from the days-to-purchase distribution (sits between p90=19 and p95=29 days).
+- **Right-censoring fix**: only users whose first session occurred on or before 2021-01-01 are included, so every included user had the full 30-day window.
+- **Join structure**: six stage CTEs each collapse to one row per user via `MIN(event_timestamp)`; `LEFT JOIN` (not `INNER JOIN`) preserves drop-off users as `NULL` rather than deleting them; the 30-day window is enforced inside each join's `ON` clause (not `WHERE`), which is what makes "dropped off" distinguishable from "converted but outside window."
+- **Validation**: `chronology_status` and `missing_step` diagnostic fields flag out-of-order timestamps and the first missing stage per user; three investigated anomalies (784 users with checkout-before-cart ordering, 3,648 users missing `add_to_cart`, and a tracking-gap subset with `purchase` but no `add_to_cart`) are documented as caveats rather than corrected in the data.
+- Query lives in `funnel_analytics/funnel_raw.sql`, parameterized via `DECLARE`d `CUTOFF_DATE` and `WINDOW_DAYS` variables.
+- Remaining work: Phase 8 (Looker Studio visualization) and Phase 9 (generalizing the methodology to a B2B marketing-channel-to-lead funnel).

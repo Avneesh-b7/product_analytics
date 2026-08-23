@@ -34,9 +34,7 @@ CustomerID: Customer number. Nominal. A 5-digit integral number uniquely assigne
 
 Country: Country name. Nominal. The name of the country where a customer resides
 
-Use [IBM Design Language](https://www.ibm.com/design/language/) to design plots.
-
-Use the colors from [IBM Design Language — Color](https://www.ibm.com/design/language/color).
+Use the repo's `dataviz` skill categorical palette to design plots — distinct hues per cluster, not the single-hue sequential palette used for continuous magnitudes elsewhere in the repo.
 
 ## Preprocessing & Clustering Notes
 
