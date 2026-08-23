@@ -177,6 +177,166 @@ FROM stage_counts;
 
 
 
+--- structuring the data for viz ---
+-- select * from staging.funnel_raw where lower(chronology_status) like '%invalid%' 
+-- just taking all invalid rows as well assuming misfiring of events
+SELECT
+  1 AS step,
+  'first_session' AS stage_name,
+  COUNT(DISTINCT user_pseudo_id) AS total_users,
+  COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+  COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT user_pseudo_id) AS pct_of_total_users,
+  COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+  100.0 AS pct_of_prev_stage
+FROM staging.funnel_raw
+UNION ALL
+SELECT
+  2 AS step,
+  'view_item' AS stage_name,
+  COUNT(DISTINCT user_pseudo_id) AS total_users,
+  COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+  COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT user_pseudo_id) AS pct_of_total_users,
+  COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+  COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS pct_of_prev_stage
+FROM staging.funnel_raw
+UNION ALL
+SELECT
+  3 AS step,
+  'add_to_cart' AS stage_name,
+  COUNT(DISTINCT user_pseudo_id) AS total_users,
+  COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+  COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT user_pseudo_id) AS pct_of_total_users,
+  COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+  COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) AS pct_of_prev_stage
+FROM staging.funnel_raw
+UNION ALL
+SELECT
+  4 AS step,
+  'begin_checkout' AS stage_name,
+  COUNT(DISTINCT user_pseudo_id) AS total_users,
+  COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+  COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT user_pseudo_id) AS pct_of_total_users,
+  COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+  COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) AS pct_of_prev_stage
+FROM staging.funnel_raw
+UNION ALL
+SELECT
+  5 AS step,
+  'add_payment_info' AS stage_name,
+  COUNT(DISTINCT user_pseudo_id) AS total_users,
+  COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+  COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT user_pseudo_id) AS pct_of_total_users,
+  COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+  COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) AS pct_of_prev_stage
+FROM staging.funnel_raw
+UNION ALL
+SELECT
+  6 AS step,
+  'purchase' AS stage_name,
+  COUNT(DISTINCT user_pseudo_id) AS total_users,
+  COUNT(DISTINCT CASE WHEN first_purchase IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+  COUNT(DISTINCT CASE WHEN first_purchase IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT user_pseudo_id) AS pct_of_total_users,
+  COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+  COUNT(DISTINCT CASE WHEN first_purchase IS NOT NULL THEN user_pseudo_id END) * 100.0 / COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) AS pct_of_prev_stage
+FROM staging.funnel_raw
+ORDER BY step;
+
+
+
+
+
+
+
+
+--------------- viz 2 view---------
+---- a table grouped by channel --
+WITH channel_totals AS (
+SELECT
+channel_group,
+COUNT(DISTINCT user_pseudo_id) AS total_users
+FROM staging.funnel_raw
+GROUP BY channel_group
+)
+-- select * from channel_totals
+SELECT
+channel_group,
+1 AS step,
+'first_session' AS stage_name,
+total_users,
+COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END)*100.0/total_users AS pct_of_total_users,
+COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+100.0 AS pct_of_prev_stage
+FROM staging.funnel_raw
+JOIN channel_totals USING(channel_group)
+GROUP BY channel_group,total_users
+UNION ALL
+SELECT
+channel_group,
+2 AS step,
+'view_item' AS stage_name,
+total_users,
+COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END)*100.0/total_users AS pct_of_total_users,
+COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END)*100.0/NULLIF(COUNT(DISTINCT CASE WHEN first_session IS NOT NULL THEN user_pseudo_id END),0) AS pct_of_prev_stage
+FROM staging.funnel_raw
+JOIN channel_totals USING(channel_group)
+GROUP BY channel_group,total_users
+UNION ALL
+SELECT
+channel_group,
+3 AS step,
+'add_to_cart' AS stage_name,
+total_users,
+COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END)*100.0/total_users AS pct_of_total_users,
+COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END)*100.0/NULLIF(COUNT(DISTINCT CASE WHEN first_view_item IS NOT NULL THEN user_pseudo_id END),0) AS pct_of_prev_stage
+FROM staging.funnel_raw
+JOIN channel_totals USING(channel_group)
+GROUP BY channel_group,total_users
+UNION ALL
+SELECT
+channel_group,
+4 AS step,
+'first_begin_checkout' AS stage_name,
+total_users,
+COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END)*100.0/total_users AS pct_of_total_users,
+COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END)*100.0/NULLIF(COUNT(DISTINCT CASE WHEN first_add_to_cart IS NOT NULL THEN user_pseudo_id END),0) AS pct_of_prev_stage
+FROM staging.funnel_raw
+JOIN channel_totals USING(channel_group)
+GROUP BY channel_group,total_users
+UNION ALL
+SELECT
+channel_group,
+5 AS step,
+'first_add_payment_info' AS stage_name,
+total_users,
+COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END)*100.0/total_users AS pct_of_total_users,
+COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END)*100.0/NULLIF(COUNT(DISTINCT CASE WHEN first_begin_checkout IS NOT NULL THEN user_pseudo_id END),0) AS pct_of_prev_stage
+FROM staging.funnel_raw
+JOIN channel_totals USING(channel_group)
+GROUP BY channel_group,total_users
+UNION ALL
+SELECT
+channel_group,
+6 AS step,
+'first_purchase' AS stage_name,
+total_users,
+COUNT(DISTINCT CASE WHEN first_purchase IS NOT NULL THEN user_pseudo_id END) AS users_in_stage,
+COUNT(DISTINCT CASE WHEN first_purchase IS NOT NULL THEN user_pseudo_id END)*100.0/total_users AS pct_of_total_users,
+COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END) AS users_in_prev_stage,
+COUNT(DISTINCT CASE WHEN first_purchase IS NOT NULL THEN user_pseudo_id END)*100.0/NULLIF(COUNT(DISTINCT CASE WHEN first_add_payment_info IS NOT NULL THEN user_pseudo_id END),0) AS pct_of_prev_stage
+FROM staging.funnel_raw
+JOIN channel_totals USING(channel_group)
+GROUP BY channel_group,total_users
+ORDER BY channel_group,step;
+
 
 
 

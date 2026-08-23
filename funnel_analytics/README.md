@@ -109,7 +109,7 @@ Stage counts, conversion %, and drop-off % were computed both overall and cut by
 
 ## 7. What's Left
 
-- **Phase 8 — Visualization (Looker Studio):** reshape stage-count output from wide (stages as columns) to long (one row per stage) format, since that's what funnel-chart visuals expect. Build the funnel chart and channel breakdown.
+- **Phase 8 — Visualization (Looker Studio):** stage-count output has been reshaped from wide (stages as columns) to long (one row per stage, with `pct_of_total_users` and `pct_of_prev_stage`) — both overall and split by `channel_group` — since that's what funnel-chart visuals expect. Remaining: connect these queries to Looker Studio and build the funnel chart and channel breakdown visuals.
 - **Phase 9 — Generalize the approach:** adapt this same methodology to a B2B-style marketing-channel-to-lead funnel, accounting for the structural differences noted in caveat 6.
 
 ---
