@@ -10,6 +10,7 @@
 8. **A/B Testing Practice** — Scenario-based practice notebook (`smart-ab_testing.ipynb`) covering the full 8-step pipeline across two scenarios (checkout page conversion rate, ad creative CTR). Includes one-tailed vs two-tailed decision logic, guardrail metrics, sample size calculation with manual formula + statsmodels, and a reusable 6-check Ship vs No-Ship checklist.
 9. **E2E Project** — End-to-end analysis on synthetic FitTrack data combining clustering, cohort retention, and A/B testing. Covers outlier detection and segmentation, RFM feature engineering, K-Means segmentation (K=6 core clusters + 3 outlier segments: Champions, Frequent Users, High Monetary Value). Cohort analysis includes weekly retention heatmaps by cohort and channel, N-day exact-day retention (D1/D3/D7/D30), rolling 2-week retention by cohort and channel, observation window correction, anomaly detection (isolated cohort dip vs. platform-wide event), and seasonality analysis — all computed in DuckDB SQL with no pandas transformation layer. Experiment analysis covers novelty effect detection (weekly CR chart), SRM check, power analysis (relative and absolute MDE scenarios), and a two-proportion z-test on activity-based daily CR (post-novelty window only); result: statistically significant lift (+1.14pp) but below the +2pp MDE threshold → Do Not Ship Yet.
 10. **Funnel Analytics** — Marketing-to-customer conversion funnel built in BigQuery SQL on the public GA4 ecommerce sample dataset (92 days, 4.3M events, 270k users). Covers stage definition (`session_start` → `view_item` → `add_to_cart` → `begin_checkout` → `add_payment_info` → `purchase`), strict first-touch channel attribution, a 30-day conversion window with a right-censoring fix, a `LEFT JOIN`-based funnel build that preserves drop-off users, and a validation layer that surfaces and documents chronology anomalies and tracking gaps rather than silently correcting them.
+11. **Process Variance Detection** — Statistical process control (SPC) on a synthetic streaming session-depth metric (90 days, 4 labeled periods: baseline/degradation/recovery/final_stable). Covers baseline-derived control limits (mean ± 3σ, held fixed and applied to the full timeline rather than recalculated), Western Electric zone classification (Zone C/B/A + beyond limits), and Western Electric run rules 1–4 (single-point breach, 2-of-3, 4-of-5, 8-in-a-row) implemented as consecutive-run flags to catch a moderate sustained shift that no single-point threshold check would detect.
 
 ## Getting Started
 
@@ -28,6 +29,7 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 ├── Experimentation/          # Lab 6: A/B testing framework and statistical testing
 ├── e2e_project/              # Lab 9: E2E clustering + cohort retention + experimentation
 ├── funnel_analytics/         # Lab 10: BigQuery SQL marketing-to-customer funnel
+├── process_var_detection/    # Lab 11: SPC control chart + Western Electric rules
 ├── requirements.txt
 └── CLAUDE.md
 ```
