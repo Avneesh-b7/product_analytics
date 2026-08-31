@@ -12,6 +12,7 @@
 10. **Funnel Analytics** — Marketing-to-customer conversion funnel built in BigQuery SQL on the public GA4 ecommerce sample dataset (92 days, 4.3M events, 270k users). Covers stage definition (`session_start` → `view_item` → `add_to_cart` → `begin_checkout` → `add_payment_info` → `purchase`), strict first-touch channel attribution, a 30-day conversion window with a right-censoring fix, a `LEFT JOIN`-based funnel build that preserves drop-off users, and a validation layer that surfaces and documents chronology anomalies and tracking gaps rather than silently correcting them.
 11. **Process Variance Detection** — Statistical process control (SPC) on a synthetic streaming session-depth metric (90 days, 4 labeled periods: baseline/degradation/recovery/final_stable). Covers baseline-derived control limits (mean ± 3σ, held fixed and applied to the full timeline rather than recalculated), Western Electric zone classification (Zone C/B/A + beyond limits), and Western Electric run rules 1–4 (single-point breach, 2-of-3, 4-of-5, 8-in-a-row) implemented as consecutive-run flags to catch a moderate sustained shift that no single-point threshold check would detect.
 12. **Correlation Analysis** — Correlation and activation-based risk segmentation on a synthetic GrowthTech SaaS dataset (1,200 users). Covers Pearson vs. Spearman coefficient choice (point-biserial for binary flags, Spearman as primary for right-skewed `total_sessions`), significance testing (p-values + 95% Fisher-z confidence intervals) paired with Cohen's effect-size thresholds so p-value isn't mistaken for importance at n=1,200, an unweighted composite `activation_score` (0–3) built from the activation steps that actually showed signal, and a two-signal (`activation_score` × `total_sessions`) rule-based High risk / Watch list / High potential segmentation validated against actual 30d/90d retention rates.
+13. **Channel Segmentation Analysis** — Acquisition-channel efficiency vs. contribution analysis on a synthetic StreamlineApp dataset (7,390 users, 6 channels). Covers per-channel `activation_rate` vs. a blended baseline, a user-share-weighted `contribution_index_pts` metric (fixes a flat-mean benchmark that structurally penalized small channels), and a four-quadrant chart (efficiency × contribution) with documented limitations — no time trend, no cost/spend data, no significance testing on the activation-rate gaps.
 
 ## Getting Started
 
@@ -32,6 +33,7 @@ jupyter notebook "event data aggregation/event_data_agg.ipynb"
 ├── funnel_analytics/         # Lab 10: BigQuery SQL marketing-to-customer funnel
 ├── process_var_detection/    # Lab 11: SPC control chart + Western Electric rules
 ├── correl_analysis/          # Lab 12: correlation analysis + activation risk segmentation
+├── channel_segmentation_analysis/  # Lab 13: acquisition-channel efficiency vs. contribution
 ├── requirements.txt
 └── CLAUDE.md
 ```
