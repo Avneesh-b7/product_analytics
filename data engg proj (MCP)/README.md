@@ -6,12 +6,14 @@ A local PostgreSQL environment using Docker, loaded with a synthetic e-commerce 
 
 ## Project Files
 
-| File                   | Description                                           |
-| ---------------------- | ----------------------------------------------------- |
-| `demo_data.sql`        | SQL dump with schema + 43,000 rows of e-commerce data |
-| `schema_diagram.mmd`   | Mermaid ER diagram of the database schema             |
-| `docker_cheatsheet.md` | Docker CLI quick reference                            |
-| `README.md`            | This file                                             |
+| File                   | Description                                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `demo_data.sql`        | SQL dump with schema + 43,000 rows of e-commerce data                                                                          |
+| `schema_diagram.mmd`   | Mermaid ER diagram of the database schema                                                                                      |
+| `docker_cheatsheet.md` | Docker CLI quick reference                                                                                                     |
+| `db_audit.py`          | Performance audit script (table sizes, cache hit rate, missing FK indexes) — see `audit_explainer.md` / `indexes_explainer.md` |
+| `analytics_dbt/`       | dbt project transforming `app` schema data into `dbt_dev` models — see its own `README.md`                                     |
+| `README.md`            | This file                                                                                                                      |
 
 ---
 
@@ -31,16 +33,16 @@ docker run -d \
   -p 5432:5432 \
   postgres:16
 
-# 3. Configure user and schema
-docker exec -i pg-local psql -U postgres -d analytics <<'SQL'
-CREATE USER app WITH PASSWORD 'app';
-GRANT ALL PRIVILEGES ON DATABASE analytics TO app;
-CREATE SCHEMA app AUTHORIZATION app;
-GRANT ALL ON SCHEMA app TO app;
-SQL
-
-# 4. Load the data
+# 3. Load the data (creates the app schema + tables)
 docker exec -i pg-local psql -U postgres -d analytics < demo_data.sql
+
+# 4. Create a read-only app user
+docker exec -i pg-local psql -U postgres -d analytics <<'SQL'
+CREATE USER app WITH PASSWORD 'password';
+GRANT CONNECT ON DATABASE analytics TO app;
+GRANT USAGE ON SCHEMA app TO app;
+GRANT SELECT ON ALL TABLES IN SCHEMA app TO app;
+SQL
 
 # 5. Connect and query
 docker exec -it pg-local psql -U postgres -d analytics
@@ -79,26 +81,7 @@ docker ps --filter name=pg-local
 
 ---
 
-### 2. Configure the App User and Schema
-
-Connect into the container and run:
-
-```bash
-docker exec -it pg-local psql -U postgres -d analytics
-```
-
-Then execute:
-
-```sql
-CREATE USER app WITH PASSWORD 'app';
-GRANT ALL PRIVILEGES ON DATABASE analytics TO app;
-CREATE SCHEMA app AUTHORIZATION app;
-GRANT ALL ON SCHEMA app TO app;
-```
-
----
-
-### 3. Load the Demo Data
+### 2. Load the Demo Data
 
 From the project folder:
 
@@ -117,11 +100,32 @@ This creates 4 tables and inserts 43,000 rows:
 
 ---
 
+### 3. Create the Read-Only App User
+
+Connect into the container and run:
+
+```bash
+docker exec -it pg-local psql -U postgres -d analytics
+```
+
+Then execute:
+
+```sql
+CREATE USER app WITH PASSWORD 'password';
+GRANT CONNECT ON DATABASE analytics TO app;
+GRANT USAGE ON SCHEMA app TO app;
+GRANT SELECT ON ALL TABLES IN SCHEMA app TO app;
+```
+
+`app` has read-only access to the `app` schema — used for querying, not schema changes. `postgres` remains the superuser for admin tasks (loading data, running dbt, migrations).
+
+---
+
 ## Database Structure
 
 ```
 analytics (database)
-└── app (schema, owner: app)
+└── app (schema, owner: postgres)
     ├── customers
     ├── products
     ├── orders
