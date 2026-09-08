@@ -77,4 +77,10 @@ channel_segmentation_analysis/data
 correl_analysis/data
 
 ## practice 
-/practice_q/*
+/practice_q/ab_testing_prac/*
+/practice_q/cohort_prac/*
+/practice_q/data/*
+/practice_q/data/pandas_numpy_practice_questions.md
+
+# all pdf's everywhere
+*.pdf
