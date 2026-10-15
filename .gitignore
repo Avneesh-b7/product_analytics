@@ -81,3 +81,5 @@ correl_analysis/data
 
 # all pdf's everywhere
 *.pdf
+
+/tracking_framework/data/*

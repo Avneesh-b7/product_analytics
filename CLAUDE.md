@@ -337,6 +337,23 @@ Key design decisions:
 - **Result on this dataset**: Organic Search, Direct Traffic, Email Marketing, and Partner Referrals all land top-right (green); Paid Search and Social Media Ads land bottom-left (red), with Social Media Ads the single weakest channel on both axes (25.53% activation rate, −5.11pt index) — flagged as the top root-cause-investigation priority. Partner Referrals has the best raw activation rate (61.11%) but only 90 users, so its index is small in absolute points purely from channel size, not underperformance — treated as "protect and monitor," not a scaling lever.
 - **Documented limitations** (not corrected in the analysis): cross-sectional snapshot only, no time trend; no cost/spend data, so "over-indexing on contribution" isn't the same as "profitable" — paid channels (Paid Search, Social Media Ads) carry acquisition costs that free/organic channels don't, understating their urgency relative to similarly-placed free channels; no significance testing on the `activation_rate` gaps between channels.
 
+## Tracking Framework Lab
+
+A thirteenth lab in `tracking_framework/tracking_spec.ipynb` — onboarding-funnel diagnosis on synthetic Trello onboarding events, framed as a PM question ("onboarding conversion feels low; we can ship one fix this sprint — where?"). Reference material alongside it: `Trello_Onboarding_Tracking_Spec.xlsx` (the tracking spec) and two PDFs (gitignored via `*.pdf`).
+
+Data in `tracking_framework/data/` (gitignored via `/tracking_framework/data/*`; the folder holds `trello_onboarding_events.csv` and `events_data_dictionary.csv`). Event columns used: `user_id`, `timestamp`, `event_name`, `step_number`, `step_name`, `device_type`, `traffic_source`, `user_segment`, `signup_method`.
+
+Key design decisions:
+
+- **Funnel counting**: `nunique` of `user_id` per `(event_name, step_number, step_name)`, with `pct_of_total` relative to the first step (`onboarding_tutorial_started`) _within each segment_ — not the global total — so segment funnels are comparable.
+- **Non-funnel events excluded**: `onboarding_close_clicked` and `onboarding_back_clicked` are filtered out before building the funnel (they are side-actions, not steps).
+- **Drill-down path**: overall funnel → biggest drop at steps 6→7 → split by `device_type` → mobile only, split by `traffic_source`, `user_segment`, `signup_method` → mobile `new_user` by `traffic_source`. The reusable helpers `mobile_funnel(by, **filters)`, `funnel_table()` and `plot_funnel()` implement this; add new cuts by calling them rather than copying the groupby.
+- Charts use the `dataviz` categorical palette with a distinct marker per series.
+
+## Activation & Redundancy Materials
+
+`activation_and_redudancy/` (sic) holds only course PDFs and two Excel datasets (`RetailMax_CartCheckout_Data.xlsx`, `TechFlow_UserJourney_Data.xlsx`) for cart-to-checkout consolidation and activation-event selection exercises — no notebook or code yet.
+
 ## Practice Questions (`practice_q/`)
 
 Scratch area for standalone SQL/pandas/cohort/funnel/A-B-testing practice,Most of `practice_q/` is gitignored (`ab_testing_prac/`, `cohort_prac/`, `data/`); only `sql_python_prac_q/pandas_prac.ipynb` is tracked. Notebooks here use relative paths (e.g. `../data/*.csv`) rather than absolute paths, since the CSVs live in a sibling gitignored `data/` folder.
