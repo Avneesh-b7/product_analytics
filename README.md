@@ -1,3 +1,5 @@
+> **Disclaimer:** This repository is for learning purposes only. Company, product, and brand names that appear in the labs (e.g. Trello, Meta, FitTrack, GrowthTech, StreamlineApp, RetailMax, TechFlow) are used only as illustrative scenario framing. All data, user behavior, metrics, and results for those scenarios are **hypothetical, synthetic, and fabricated**, and do not represent any real company's data, performance, or internal practices. No affiliation with or endorsement by any named company is implied. The only real data used comes from public third-party datasets (Online Retail II, the GA4 obfuscated ecommerce sample, and the Kaggle/Udacity A/B testing datasets), which remain subject to their own licenses and terms.
+
 # What's Covered
 
 1. **SQL Dialect Comparison** — Write equivalent window function queries in ANSI-SQL and Spark-SQL, focusing on how window frame specification differs between dialects (`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` in Spark vs. implicit frames in ANSI).
